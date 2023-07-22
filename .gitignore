@@ -1,0 +1,4 @@
+STLink/
+build/stepper_motor.bin
+build/stepper_motor.elf
+build/stepper_motor.o
