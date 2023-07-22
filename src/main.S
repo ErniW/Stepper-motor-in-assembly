@@ -1,21 +1,5 @@
-/*
-    Configure timer
-    configure interrupt for PWM mode to count steps
-    move to
-    ... in direction
-    change speed.
-
-    ldr REG, =RCC_AHB1ENR
-    mov BIT, GPIOA_EN
-    bl  bit_set
-
-*/
-
-
 .syntax unified
 .thumb
-
-
 
 .include "includes/main.inc"
 .include "includes/stepper.inc"
@@ -24,7 +8,7 @@
 
 .section .data
 .align 4
-    steps: .word 0
+    steps: .word 400
 
 .section .text
 .globl  main
@@ -40,8 +24,12 @@ main:
     mov VAL, TIM2_EN
     bl  bit_set
 
-     ldr REG, =GPIOA_MODER
+    ldr REG, =GPIOA_MODER
     mov VAL, STEP_PIN_AF_MODE
+    bl  bit_set
+
+    ldr REG, =GPIOA_MODER
+    mov VAL, DIR_PIN_OUTPUT_MODE
     bl  bit_set
 
     ldr REG, =GPIOA_AFRL
@@ -49,14 +37,11 @@ main:
     bl  bit_set
 
     bl  stepper_timer_init
-    # bl  stepper_interrupt_init
+    bl  stepper_interrupt_init
 
 loop:
 
-
     b   loop
-
-
 
 .align
 .end

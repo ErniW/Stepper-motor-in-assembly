@@ -15,8 +15,9 @@ FLAGS += -mfloat-abi=hard -mfpu=fpv5-d16
 FLAGS += -g
 
 compile:
-	arm-none-eabi-as $(FLAGS) $(SRCS) $(STARTUP) -o $(BUILD_DIR)/$(PROJ_NAME).o -w
-	arm-none-eabi-ld -T $(LINKER) -o $(BUILD_DIR)/$(PROJ_NAME).elf $(BUILD_DIR)/$(PROJ_NAME).o
+	arm-none-eabi-as $(FLAGS) $(SRCS) -c -o $(BUILD_DIR)/$(PROJ_NAME).o
+	arm-none-eabi-as $(FLAGS) $(STARTUP) -o $(BUILD_DIR)/startup.o
+	arm-none-eabi-ld -T $(LINKER) -o $(BUILD_DIR)/$(PROJ_NAME).elf $(BUILD_DIR)/startup.o $(BUILD_DIR)/$(PROJ_NAME).o
 	arm-none-eabi-objcopy -O binary $(BUILD_DIR)/$(PROJ_NAME).elf $(BUILD_DIR)/$(PROJ_NAME).bin
 
 upload:

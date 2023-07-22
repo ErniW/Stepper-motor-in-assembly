@@ -26,7 +26,8 @@
 .equ TIM_CH1_PWM_MODE,  ((1 << 6) | (1 << 5))
 .equ TIM_CH1_CC_EN,     (1 << 0)
 .equ TIM_CH1_CC_INT_EN, (1 << 1)
+.equ TIM_SR_CC1IF,      (1 << 1)
 
 .equ PRESCALER_VALUE,   16-1
-.equ ARR_VALUE,         1000
+.equ ARR_VALUE,         4000
 .equ PULSE_LENGTH,      10
