@@ -56,7 +56,7 @@ stepper_interrupt_init:
 # Decrement the step value with each pulse.
 TIM2_IRQHandler:
 
-    push {lr, r0-r2}
+    push {r0-r2, lr}
 
     ldr r0, =TIM2_SR
     tst r0, TIM_SR_CC1IF
@@ -64,27 +64,28 @@ TIM2_IRQHandler:
 
     ldr r1, =steps
     ldr r2, [r1]
+    //cmp r2, #0
+    //beq steps_done
+    
     subs r2, r2, #1
     str r2, [r1]
     beq steps_done
+    
+    b clear_TIM2_IRQHandler
 
 # Clear the flag and leave the handler.
 clear_TIM2_IRQHandler:
-
+    ldr r0, =TIM2_SR
     ldr r1, [r0]
     bic r1, r1, TIM_SR_CC1IF
     str r1, [r0]
-    pop {lr, r0-r2}
+    pop {r0-r2, lr}
     bx lr
 
 # If there are no steps remaining, start over the counter and switch direction.
 steps_done:
-    ldr r1, =steps
-    mov r2, #400
-    str r2, [r1]
-    ldr r1, =GPIOA_ODR
-    ldr r2, [r1]
-    eor r2, r2, DIR_PIN
-    str r2, [r1]
+
+    ldr REG, =TIM2_CR1
+    mov VAL, TIM_CR1_CEN
+    bl  bit_clear
     b clear_TIM2_IRQHandler
-    
