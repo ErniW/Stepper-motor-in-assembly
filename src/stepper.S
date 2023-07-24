@@ -1,6 +1,7 @@
+# Initialize the timer
 stepper_timer_init:
 
-    push {lr}
+    push {r0-r2, lr}
 
     ldr r1, =TIM2_PSC
     mov r2, #PRESCALER_VALUE
@@ -34,58 +35,55 @@ stepper_timer_init:
     mov r2, #0
     str r2, [r1]
 
-    pop {lr}
+    pop {r0-r2, lr}
     bx  lr
 
-
+# Enable the interrupt.
 stepper_interrupt_init:
 
-    push {lr}
+    push {r0-r2, lr}
 
-    ldr r1, =NVIC_BASE
-    ldr r2, [r1]
-    mov r3, TIM2_IRQN_OFFSET
-    str r3, [r1]
+    ldr REG, =NVIC_BASE
+    mov VAL, TIM2_IRQN_NUMBER
+    bl  bit_set
 
-    pop {lr} 
+    pop {r0-r2, lr} 
     bx  lr
 
 
 .globl TIM2_IRQHandler
 .type TIM2_IRQHandler, %function
-# Decrement the step value with each pulse.
 TIM2_IRQHandler:
 
     push {r0-r2, lr}
 
     ldr r0, =TIM2_SR
-    tst r0, TIM_SR_CC1IF
-    bne clear_TIM2_IRQHandler
+    ldr r1, [r0]
+    tst r1, TIM_SR_CC1IF
+    beq clear_TIM2_IRQHandler
 
+    # Decrement the step value with each pulse.
     ldr r1, =steps
     ldr r2, [r1]
-    //cmp r2, #0
-    //beq steps_done
-    
+
     subs r2, r2, #1
     str r2, [r1]
     beq steps_done
-    
-    b clear_TIM2_IRQHandler
 
-# Clear the flag and leave the handler.
-clear_TIM2_IRQHandler:
-    ldr r0, =TIM2_SR
-    ldr r1, [r0]
-    bic r1, r1, TIM_SR_CC1IF
-    str r1, [r0]
-    pop {r0-r2, lr}
-    bx lr
+    # Clear the flag and leave the handler.
+    clear_TIM2_IRQHandler:
 
-# If there are no steps remaining, start over the counter and switch direction.
-steps_done:
+        ldr r0, =TIM2_SR
+        ldr r1, [r0]
+        bic r1, r1, TIM_SR_CC1IF
+        str r1, [r0]
+        pop {r0-r2, lr}
+        bx lr
 
-    ldr REG, =TIM2_CR1
-    mov VAL, TIM_CR1_CEN
-    bl  bit_clear
-    b clear_TIM2_IRQHandler
+    # If there are no steps remaining, start over the counter and switch direction.
+    steps_done:
+
+        ldr REG, =TIM2_CR1
+        mov VAL, TIM_CR1_CEN
+        bl  bit_clear
+        b clear_TIM2_IRQHandler

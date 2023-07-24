@@ -64,7 +64,7 @@ switch_direction:
 
     //Give some time to stabilize the shaft
     ldr r0, =delay_counter
-    mov r1, #50
+    mov r1, STABILIZE_DELAY
     str r1, [r0]
     bl  delay_ms
 

@@ -23,3 +23,8 @@ compile:
 
 upload:
 	$(STLINK_DIR)/st-flash --reset write $(BUILD_DIR)/$(PROJ_NAME).bin 0x8000000
+
+clean:
+	rm -f $(BUILD_DIR)/*.o
+
+.phony: clean

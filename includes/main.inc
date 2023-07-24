@@ -26,5 +26,4 @@
 .equ STEP_PIN_OUTPUT_MODE,  (1 << 10)
 .equ DIR_PIN,               (1 << 9)
 
-.equ NVIC_BASE,        0xE000E100
-.equ TIM2_IRQN_OFFSET, (1 << 28)
+.equ NVIC_BASE, 0xE000E100
